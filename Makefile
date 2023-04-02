@@ -3,13 +3,14 @@ CC := gcc
 WEB_CC := emcc
 
 # Set additional compiler flags.
-CFLAGS  := -Wall -Werror -Wextra -pedantic-errors -std=c17 -MMD -MP
+# CFLAGS  := -Wall -Werror -Wextra -pedantic-errors -std=c17 -MMD -MP
+CFLAGS  := -Wall -Wextra -std=c17 -MMD -MP
 WEB_CFLAGS := --shell-file shell.html -s USE_GLFW=3 -s ASYNCIFY
 LDFLAGS := 
 
 CFLAGS += $(shell pkg-config --cflags raylib)
 LDFLAGS += $(shell pkg-config --libs raylib)
-WEB_LDFLAGS += -L/Users/dominicaschauer/Documents/workspace/blog/deps/raylib/src -lraylib $(LDFLAGS)
+WEB_LDFLAGS += -Ldeps/raylib/src -lraylib $(LDFLAGS)
 
 SIMULATIONS := $(shell find simulations -name '*.c') 
 HTML_FILES := $(SIMULATIONS:.c=.html)
