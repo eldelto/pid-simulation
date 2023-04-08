@@ -21,10 +21,10 @@
 *
 **********************************************************************************************/
 
-#include "../../deps/raylib/src/raylib.h"
+#include "raylib.h"
 
 #define RAYGUI_IMPLEMENTATION
-#include "../../deps/raygui/src/raygui.h"
+#include "raygui.h"
 
 
 static void DrawStyleEditControls(void);  // Draw and process scroll bar style edition controls
