@@ -21,10 +21,10 @@
 *
 **********************************************************************************************/
 
-#include "../deps/raylib/src/raylib.h"
+#include "../../deps/raylib/src/raylib.h"
 
 #define RAYGUI_IMPLEMENTATION
-#include "../deps/raygui/src/raygui.h"
+#include "../../deps/raygui/src/raygui.h"
 
 
 static void DrawStyleEditControls(void);  // Draw and process scroll bar style edition controls
@@ -38,7 +38,7 @@ int main() {
   const int screenWidth = 800;
   const int screenHeight = 450;
 
-  InitWindow(screenWidth, screenHeight, "raygui - GuiScrollPanel()");
+  InitWindow(screenWidth, screenHeight, "raygui - GuiScrollPanel() test");
 
   Rectangle panelRec = { 20, 40, 200, 150 };
   Rectangle panelContentRec = { 0, 0, 340, 340 };

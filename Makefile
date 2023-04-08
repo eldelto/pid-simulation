@@ -12,8 +12,8 @@ CFLAGS += $(shell pkg-config --cflags raylib)
 LDFLAGS += $(shell pkg-config --libs raylib)
 WEB_LDFLAGS += -Ldeps/raylib/src -lraylib $(LDFLAGS)
 
-SIMULATIONS := $(shell find simulations -name '*.c') 
-HTML_FILES := $(SIMULATIONS:.c=.html)
+SIMULATIONS := $(shell find simulations -name "*.c")
+HTML_FILES := $(SIMULATIONS:%.c=bin/%.html)
 
 .PHONY: all
 all: deps bin $(HTML_FILES)
@@ -21,15 +21,10 @@ all: deps bin $(HTML_FILES)
 bin:
 	mkdir bin
 
-bin/hello: hello.o
-	$(CC) $^ -o $@ $(LDFLAGS)
-
-bin/hello.html: hello.c
+# TODO: Fix target path because now the .html files are always recompiled
+$(HTML_FILES): bin/%.html: %.c
+	mkdir -p $(@D)
 	$(WEB_CC) $(WEB_CFLAGS) $^ -o $@ $(CFLAGS) $(WEB_LDFLAGS)
-
-$(HTML_FILES): %.html: %.c
-	mkdir -p bin/simulations/$(shell basename $@ .html)
-	$(WEB_CC) $(WEB_CFLAGS) $^ -o bin/simulations/$(shell basename $@ .html)/$(shell basename $@) $(CFLAGS) $(WEB_LDFLAGS)
 
 deps: deps/raylib/src/libraylib.a 
 
