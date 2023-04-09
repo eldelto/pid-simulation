@@ -3,6 +3,8 @@ CC := gcc
 WEB_CC := emcc
 
 # Set additional compiler flags.
+# TODO: Enable stricter error checking again after figuring out how to compile
+#       raylib in a more lenient way.
 # CFLAGS  := -Wall -Werror -Wextra -pedantic-errors -std=c17 -MMD -MP
 CFLAGS  := -Wall -Wextra -std=c17 -MMD -MP
 LDFLAGS := 
@@ -30,7 +32,7 @@ deps: deps/raylib/src/libraylib.a deps/Chipmunk2D/src/libchipmunk.a
 
 deps/raylib/src/libraylib.a:
 	EMSDK_PATH=$(shell which emcc) \
-	EMSCRIPTEN_PATH=$(shell which emcc)\
+	EMSCRIPTEN_PATH=$(shell which emcc) \
 	CLANG_PATH=$(shell which emcc) \
 	PYTHON_PATH=$(shell which python3) \
 	NODE_PATH=$(shell which node) \
