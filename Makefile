@@ -9,9 +9,9 @@ WEB_CC := emcc
 CFLAGS  := -Wall -Wextra -std=c17 -MMD -MP
 LDFLAGS := 
 
-CFLAGS += -Ideps/raylib/src -Ideps/raygui/src -Ideps/Chipmunk2D/include/chipmunk
+CFLAGS += -Ideps/raylib/src -Ideps/raygui/src -Ideps/physac/src
 
-WEB_CFLAGS := --shell-file shell.html -s USE_GLFW=3 -s ASYNCIFY
+WEB_CFLAGS := --shell-file shell.html -s USE_GLFW=3 -s ASYNCIFY -O2
 WEB_LDFLAGS += -Ldeps/raylib/src -lraylib $(LDFLAGS)
 
 SIMULATIONS := $(shell find simulations -name "*.c")
@@ -28,7 +28,7 @@ $(HTML_FILES): bin/%.html: %.c
 	mkdir -p $(@D)
 	$(WEB_CC) $(WEB_CFLAGS) $^ -o $@ $(CFLAGS) $(WEB_LDFLAGS)
 
-deps: deps/raylib/src/libraylib.a deps/Chipmunk2D/src/libchipmunk.a
+deps: deps/raylib/src/libraylib.a
 
 deps/raylib/src/libraylib.a:
 	EMSDK_PATH=$(shell which emcc) \
@@ -38,11 +38,6 @@ deps/raylib/src/libraylib.a:
 	NODE_PATH=$(shell which node) \
 	cd deps/raylib/src && \
 	$(MAKE) PLATFORM=PLATFORM_WEB -B
-
-deps/Chipmunk2D/src/libchipmunk.a:
-	cd deps/Chipmunk2D && \
-	emcmake cmake . && \
-	emmake make
 
 .PHONY: clean
 clean:

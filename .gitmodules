@@ -4,6 +4,6 @@
 [submodule "deps/raygui"]
 	path = deps/raygui
 	url = https://github.com/raysan5/raygui.git
-[submodule "deps/Chipmunk2D"]
-	path = deps/Chipmunk2D
-	url = https://github.com/slembcke/Chipmunk2D.git
+[submodule "deps/physac"]
+	path = deps/physac
+	url = https://github.com/eldelto/Physac.git
