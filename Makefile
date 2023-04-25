@@ -11,7 +11,7 @@ LDFLAGS :=
 
 CFLAGS += -Ideps/raylib/src -Ideps/raygui/src -Ideps/physac/src
 
-WEB_CFLAGS := --shell-file shell.html -s USE_GLFW=3 -s ASYNCIFY -O2
+WEB_CFLAGS := --shell-file simulations/shell.html -s USE_GLFW=3 -s ASYNCIFY -O2
 WEB_LDFLAGS += -Ldeps/raylib/src -lraylib $(LDFLAGS)
 
 SIMULATIONS := $(shell find simulations -name "*.c")
