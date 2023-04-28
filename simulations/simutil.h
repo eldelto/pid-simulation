@@ -157,8 +157,8 @@ void sim_draw_graph(const struct sim_graph* const lg) {
 
     for(unsigned int i = 1; i < data_set.data_len; ++i) {
       const int x_line = x + i;
-      const int y_previous = y_mid + sim_get_data_point(&data_set, i - 1);
-      const int y = y_mid + sim_get_data_point(&data_set, i);
+      const int y_previous = y_mid - sim_get_data_point(&data_set, i - 1);
+      const int y = y_mid - sim_get_data_point(&data_set, i);
       DrawLine(x_line-1, y_previous, x_line, y, color);
     }
   }
