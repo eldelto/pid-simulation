@@ -14,7 +14,16 @@ Rectangle sim_build_slider(const Rectangle group, const int index) {
     .x = group.x + PADDING,
       .y = group.y + PADDING + (index * (15 + PADDING)),
       .width = group.width - (2 * PADDING + 10),
-      .height = 15,
+      .height = 20,
+  };
+}
+
+Rectangle sim_build_button(const Rectangle group, const int index) {
+  return (Rectangle) {
+    .x = group.x + PADDING,
+      .y = group.y + PADDING + (index * (15 + PADDING)),
+      .width = group.width - (2 * PADDING + 10),
+      .height = 30,
   };
 }
 
