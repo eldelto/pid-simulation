@@ -1,38 +1,12 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "pid.h"
 #include "../simutil.h"
 
 #include <raylib.h>
 #define RAYGUI_IMPLEMENTATION
 #include <raygui.h>
-
-struct pid_controller {
-  double p_gain;
-  double i_gain;
-  double d_gain;
-  double i_error;
-  double last_error;
-};
-
-double pid_calculate_output(struct pid_controller *pid, double set_point, double value) {
-  const double error_value = value - set_point;
-  pid->i_error += (error_value * pid->i_gain);
-  const double error_change = error_value - pid->last_error;
-  pid->last_error = error_value;
-
-  const double p_out = error_value * pid->p_gain;
-  const double i_out = pid->i_error;
-  const double d_out = error_change * pid->d_gain;
-
-  return p_out + i_out + d_out;
-}
-
-static double sim_clamp_value(double value, double min, double max) {
-  if (value < min) return min;
-  else if (value > max) return max;
-  else return value;
-}
 
 int main(void) {
   const int screen_width = 1000;
@@ -58,9 +32,9 @@ int main(void) {
     .height = screen_height - (3 * PADDING),
   };
   struct sim_graph graph = sim_new_graph(graph_rect);
-  struct sim_data_set* water_temp_data = sim_add_data_set(&graph, "Water Temp");
-  struct sim_data_set* set_point_data = sim_add_data_set(&graph, "Set Point");
-  struct sim_data_set* heater_temp_data = sim_add_data_set(&graph, "Heater Temp");
+  struct sim_data_set* set_point_data = sim_add_data_set(&graph, "Set Point", GREEN);
+  struct sim_data_set* water_temp_data = sim_add_data_set(&graph, "Water Temp", BLUE);
+  struct sim_data_set* heater_temp_data = sim_add_data_set(&graph, "Heater Temp", RED);
 
   InitWindow(screen_width, screen_height, "Proportional System");
   SetTargetFPS(60);

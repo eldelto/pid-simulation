@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "pid.h"
 #include "../simutil.h"
 
 #include <raylib.h>
@@ -10,33 +11,6 @@
 #define PHYSAC_IMPLEMENTATION
 #define PHYSAC_NO_THREADS
 #include <physac.h>
-
-struct pid_controller {
-  double p_gain;
-  double i_gain;
-  double d_gain;
-  double i_error;
-  double last_error;
-};
-
-double pid_calculate_output(struct pid_controller *pid, double set_point, double value) {
-  const double error_value = value - set_point;
-  pid->i_error += (error_value * pid->i_gain);
-  const double error_change = error_value - pid->last_error;
-  pid->last_error = error_value;
-
-  const double p_out = error_value * pid->p_gain;
-  const double i_out = pid->i_error;
-  const double d_out = error_change * pid->d_gain;
-
-  return p_out + i_out + d_out;
-}
-
-static double clamp_thrust(double thrust) {
-  if (thrust < 0) return 0;
-  else if (thrust > 50000) return 50000;
-  else return thrust;
-}
 
 int main(void) {
   const int screen_width = 1000;
@@ -62,8 +36,9 @@ int main(void) {
     .height = screen_height - (3 * PADDING),
   };
   struct sim_graph graph = sim_new_graph(graph_rect);
-  struct sim_data_set* position_data = sim_add_data_set(&graph, "Position");
-  struct sim_data_set* neg_position_data = sim_add_data_set(&graph, "Set Point");
+  struct sim_data_set* set_point_data = sim_add_data_set(&graph, "Set Point", GREEN);
+  struct sim_data_set* position_data = sim_add_data_set(&graph, "Position", BLUE);
+  struct sim_data_set* thrust_data = sim_add_data_set(&graph, "Thrust", RED);
 
   const int seesaw_width = 250;
   const Rectangle seesaw_rectangle = {
@@ -89,7 +64,7 @@ int main(void) {
   SetTargetFPS(60);
 
   InitPhysics();
-  SetPhysicsGravity(0, 0);//9.8);
+  SetPhysicsGravity(0, 9.8);
 
   float p_gain = 0;
   float i_gain = 0;
@@ -101,25 +76,32 @@ int main(void) {
   const double set_point_1 = screen_height/2;
   const double set_point_2 = screen_height/4;
 
+  double thrust = 0;
+
   while (!WindowShouldClose()) {
     RunPhysicsStep();
 
-    pid.p_gain = p_gain;
+    pid.p_gain = p_gain * 100;
     pid.i_gain = i_gain;
-    pid.d_gain = d_gain;
+    pid.d_gain = d_gain * 300;
 
     const double set_point = second_set_point ? set_point_2 : set_point_1;
 
-    double thrust = pid_calculate_output(&pid, set_point, seesaw.physics_body->position.y);
-    // thrust = clamp_thrust(thrust);
+    double new_thrust = pid_calculate_output(&pid, set_point, seesaw.physics_body->position.y);
+    double thrust_change = new_thrust - thrust;
+    thrust_change = sim_clamp_value(thrust_change, -1000, 1000);
+    thrust += thrust_change;
+    thrust = sim_clamp_value(thrust, 0, 50000);
 
     const Vector2 force = {
       .x = 0,
-      .y = -thrust/10,
+      .y = -thrust,
     };
     PhysicsAddForce(seesaw.physics_body, force);
-    sim_push_data_point(position_data, seesaw.physics_body->position.y - screen_height/2.0);
-    sim_push_data_point(neg_position_data, set_point - screen_height/2.0);
+
+    sim_push_data_point(set_point_data, -(set_point - screen_height / 2.0));
+    sim_push_data_point(position_data, -(seesaw.physics_body->position.y - screen_height / 2.0));
+    sim_push_data_point(thrust_data, thrust / 100.0);
 
     BeginDrawing();
     ClearBackground(WHITE);
@@ -130,14 +112,12 @@ int main(void) {
     sim_draw_graph(&graph);
 
     GuiGroupBox(control_group, "Controller Gains");
-    p_gain = GuiSliderBar(p_gain_slider, "P", TextFormat("%.1f", p_gain), p_gain, 0, 100);
-    i_gain = GuiSliderBar(i_gain_slider, "I", TextFormat("%.1f", i_gain), i_gain, 0, 10);
-    d_gain = GuiSliderBar(d_gain_slider, "D", TextFormat("%.1f", d_gain), d_gain, 0, 5000);
+    p_gain = GuiSliderBar(p_gain_slider, "P", TextFormat("%.2f", p_gain), p_gain, 0, 1);
+    i_gain = GuiSliderBar(i_gain_slider, "I", TextFormat("%.2f", i_gain), i_gain, 0, 1);
+    d_gain = GuiSliderBar(d_gain_slider, "D", TextFormat("%.2f", d_gain), d_gain, 0, 1);
     if (GuiButton(set_point_button, "Change setpoint")) {
       second_set_point = !second_set_point;
     }
-
-    DrawFPS(screen_width - 90, screen_height - 30);
 
     EndDrawing();
   }

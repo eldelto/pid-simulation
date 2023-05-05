@@ -23,7 +23,6 @@ all: deps bin $(HTML_FILES)
 bin:
 	mkdir bin
 
-# TODO: Fix target path because now the .html files are always recompiled
 $(HTML_FILES): bin/%.html: %.c
 	mkdir -p $(@D)
 	$(WEB_CC) $(WEB_CFLAGS) $^ -o $@ $(CFLAGS) $(WEB_LDFLAGS)

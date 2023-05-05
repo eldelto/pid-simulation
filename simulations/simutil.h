@@ -77,9 +77,10 @@ struct sim_data_set {
   unsigned int data_len;
   unsigned int cursor;
   const char* name;
+  Color color;
 };
 
-struct sim_data_set sim_new_data_set(unsigned int length, char* name) {
+struct sim_data_set sim_new_data_set(unsigned int length, char* name, Color color) {
   double* data = calloc(length, sizeof(double));
 
   return (struct sim_data_set) {
@@ -87,6 +88,7 @@ struct sim_data_set sim_new_data_set(unsigned int length, char* name) {
     .data_len = length,
     .cursor = 0,
     .name = name,
+    .color = color,
   };
 }
 
@@ -126,8 +128,8 @@ void sim_free_graph(struct sim_graph* lg) {
     sim_free_data_set(&lg->data_sets[i]);
 }
 
-struct sim_data_set* sim_add_data_set(struct sim_graph* lg, char* name) {
-  struct sim_data_set data_set = sim_new_data_set(lg->rect.width, name);
+struct sim_data_set* sim_add_data_set(struct sim_graph* lg, char* name, Color color) {
+  struct sim_data_set data_set = sim_new_data_set(lg->rect.width, name, color);
   lg->data_sets_len++;
   if (lg->data_sets_len > DATA_SETS_MAX)
     lg->data_sets_len = DATA_SETS_MAX;
@@ -137,8 +139,6 @@ struct sim_data_set* sim_add_data_set(struct sim_graph* lg, char* name) {
 
   return &lg->data_sets[i];
 }
-
-const Color colors[DATA_SETS_MAX] = {RED, BLUE, GREEN, PURPLE, ORANGE};
 
 void sim_draw_graph(const struct sim_graph* const lg) {
   const int x = lg->rect.x;
@@ -150,18 +150,24 @@ void sim_draw_graph(const struct sim_graph* const lg) {
   DrawLine(x, y, x, y + lg->rect.height, BLACK);
 
   for (unsigned int j = 0; j < lg->data_sets_len; ++j) {
-    const Color color = colors[j];
     const struct sim_data_set data_set = lg->data_sets[j];
-    DrawLine(x + PADDING, y + 5 + (PADDING * j), x + PADDING + 10, y + 5 + (PADDING * j), color);
+
+    DrawLine(x + PADDING, y + 5 + (PADDING * j), x + PADDING + 10, y + 5 + (PADDING * j), data_set.color);
     DrawText(data_set.name, x + PADDING + 20, y + (PADDING * j), 10, BLACK);
 
     for(unsigned int i = 1; i < data_set.data_len; ++i) {
       const int x_line = x + i;
       const int y_previous = y_mid - sim_get_data_point(&data_set, i - 1);
       const int y = y_mid - sim_get_data_point(&data_set, i);
-      DrawLine(x_line-1, y_previous, x_line, y, color);
+      DrawLine(x_line-1, y_previous, x_line, y, data_set.color);
     }
   }
+}
+
+double sim_clamp_value(double value, double min, double max) {
+  if (value < min) return min;
+  else if (value > max) return max;
+  else return value;
 }
 
 #endif
