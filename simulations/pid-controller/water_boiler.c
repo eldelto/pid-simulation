@@ -85,7 +85,7 @@ int main(void) {
   while (!WindowShouldClose()) {
     water_temp += (heater_temp - water_temp) / 40;
 
-    pid.p_gain = p_gain;
+    pid.p_gain = p_gain / 2;
     pid.i_gain = i_gain / 1000;
     pid.d_gain = d_gain * 10;
 
@@ -93,7 +93,7 @@ int main(void) {
 
     double heater_temp_change = pid_calculate_output(&pid, set_point, water_temp);
     heater_temp_change = sim_clamp_value(heater_temp_change, -5, 5);
-    heater_temp = sim_clamp_value(heater_temp - heater_temp_change, 22, 200);
+    heater_temp = sim_clamp_value(heater_temp + heater_temp_change, 22, 200);
     
     // PhysicsAddForce(seesaw.physics_body, force);
     sim_push_data_point(water_temp_data, water_temp * 1.5);

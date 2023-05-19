@@ -1,61 +1,285 @@
 <html>
-  <head>
-    <style>
-      body {
-	  display: flex;
-	  flex-flow: column nowrap;
-	  justify-content: flex-start;
-	  align-items: center;
-	  font-family: Verdana, sans-serif;
-	  font-size: 1.3em;
-	  line-height: 1.7em;
-	  color: rgb(76, 92, 56);
-      }
 
-      h1 {
-	  font-family: Courier New, monospace;
-      }
+<head>
+  <style>
+    body {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: flex-start;
+      align-items: center;
+      font-family: Verdana, sans-serif;
+      font-size: 1.3em;
+      line-height: 1.7em;
+      color: rgb(76, 92, 56);
+    }
 
-      h2 {
-	  font-size: 1.1em;
-	  align-self: flex-start;
-      }
+    h1 {
+      font-family: Courier New, monospace;
+      width: 100%;
+      text-align: center;
+    }
 
-      #content {
-	  display: flex;
-	  flex-flow: column nowrap;
-	  justify-content: flex-start;
-	  align-items: center;
-	  max-width: 800px;
-      }
+    h2 {
+      font-size: 1.1em;
+      width: 100%;
+      align-self: flex-start;
+    }
 
-      iframe {
-	  width: 1000px;
-	  height: 564px;
-	  border: none;
-      }
-    </style>
-  </head>
+    #content {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: flex-start;
+      align-items: center;
+      max-width: 800px;
+    }
 
-  <body>
-    <div id="content">
-      <h1>PID Controllers</h1>
+    #content>div {
+      width: 100%;
+    }
 
-      <h2>Self-regulating Systems</h2>
-      <p>
-	Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-      </p>
+    iframe {
+      width: 1000px;
+      height: 564px;
+      border: none;
+    }
+  </style>
+</head>
 
-      <iframe src="pid-controller/water_boiler.html" scrolling="no"
-	      title="Water boiler simulation"></iframe>
+<body>
 
-      <h2>Integrating Systems</h2>
-      <p>
-	Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-      </p>
+  <div id="content" class="content">
+    <h1>PID-Controller</h1>
 
-      <iframe src="pid-controller/drone_hover.html" scrolling="no"
-	      title="Drone hover simulation"></iframe>
+    <div id="table-of-contents" role="doc-toc">
+      <h2>Table of Contents</h2>
+      <div id="text-table-of-contents" role="doc-toc">
+        <ul>
+          <li><a href="#org1d64638">1. PID-Controller</a>
+            <ul>
+              <li><a href="#org2677b32">1.1. Self-Regulating Process</a></li>
+              <li><a href="#org089046d">1.2. Integrating Process</a></li>
+              <li><a href="#org8575241">1.3. Runaway Process</a></li>
+              <li><a href="#org425169c">1.4. Sources</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
-  </body>
+    <div id="outline-container-org1d64638" class="outline-2">
+      <h2 id="org1d64638"><span class="section-number-2">1.</span> PID-Controller</h2>
+      <div class="outline-text-2" id="text-1">
+        <p>
+          PID-controllers are a common method to drive arbitrary systems to
+          a desired output value.
+        </p>
+
+        <p>
+          Some common terms:
+        </p>
+
+        <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+          <colgroup>
+            <col class="org-left" />
+
+            <col class="org-left" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col" class="org-left">Term</th>
+              <th scope="col" class="org-left">Comment</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="org-left">Input</td>
+              <td class="org-left">Input signal of the system (modified by PID-controller)</td>
+            </tr>
+
+            <tr>
+              <td class="org-left">Output</td>
+              <td class="org-left">Output signal of the system</td>
+            </tr>
+
+            <tr>
+              <td class="org-left">Set-point</td>
+              <td class="org-left">Desired output value of the system</td>
+            </tr>
+
+            <tr>
+              <td class="org-left">Error</td>
+              <td class="org-left">Error = Set-point - Output</td>
+            </tr>
+
+            <tr>
+              <td class="org-left">P-term</td>
+              <td class="org-left">Proportional part of the controller</td>
+            </tr>
+
+            <tr>
+              <td class="org-left">I-term</td>
+              <td class="org-left">Integral part of the controller</td>
+            </tr>
+
+            <tr>
+              <td class="org-left">D-term</td>
+              <td class="org-left">Derivative part of the controller</td>
+            </tr>
+
+            <tr>
+              <td class="org-left">Gain</td>
+              <td class="org-left">Constant that is multiplied with the controller's output</td>
+            </tr>
+          </tbody>
+        </table>
+
+
+        <p>
+          A PID-controller is made up of three separate terms:
+        </p>
+
+        <ul class="org-ul">
+          <li>P-term - Alters the controller output proportional to the error
+            value. It creates a initial bump in the output value when the
+            set-point changes is essential for the overall controller speed.</li>
+          <li>I-term - Sums up the error value over time and changes the
+            controller output according to that summed up value. It
+            eliminates any remaining error that can not be corrected by
+            other terms.</li>
+          <li>D-term - Calculates the error change and tries to eliminate any
+            change from the status quo therefore acting as a dampening factor</li>
+        </ul>
+      </div>
+
+      <div id="outline-container-org2677b32" class="outline-3">
+        <h3 id="org2677b32"><span class="section-number-3">1.1.</span> Self-Regulating Process</h3>
+        <div class="outline-text-3" id="text-1-1">
+          <p>
+            A self-regulating process' output value stabilises after a
+            step-change of the input value at a new value without additional
+            controller input. This occurs when the process has some form of
+            natural negative feedback loop. For example the water inside a
+            water boiler can never get hotter than the heater coil and
+            therefore stabilises at that temperature over time.
+          </p>
+
+          <p>
+            This type of process can't be controlled by a pure P-controller
+            as the proportional component of the output signal gets smaller
+            in proportion to the current error and therefore the output finds
+            its equilibrium somewhere below the set-point. To eliminate the
+            error one can add an additional I-term to the controller that
+            increases over time or instead control the 1. derivation of the
+            output (e.g. temperature change instead of the absolute
+            temperature).
+          </p>
+
+          <p>
+            The amount of I-gain that can be applied depends on the time lag
+            of the system where longer time lags increase the chance for
+            oscillation.
+          </p>
+        </div>
+      </div>
+
+      <div id="outline-container-org089046d" class="outline-3">
+        <h3 id="org089046d"><span class="section-number-3">1.2.</span> Integrating Process</h3>
+        <div class="outline-text-3" id="text-1-2">
+          <p>
+            An integrating process is identified by its output value drifting
+            away from the set-point after a step-change with a constant
+            rate. A practical example is the orientation control of a
+            quad-copter. If one increases the thrust of the motors on one
+            side the drone will start rolling indefinitely until a correcting
+            action is applied.
+          </p>
+
+          <p>
+            Integrating processes can be controlled by pure P-controllers as
+            the inherit integrating nature of the process eliminates the need
+            for an additional integrating component within the controller.
+          </p>
+
+          <p>
+            The amount of P-gain also depends on the time lag of the process
+            as slower systems are more prone to oscillations.
+          </p>
+        </div>
+      </div>
+
+      <div id="outline-container-org8575241" class="outline-3">
+        <h3 id="org8575241"><span class="section-number-3">1.3.</span> Runaway Process</h3>
+        <div class="outline-text-3" id="text-1-3">
+          <p>
+            The output signal of a runaway process drifts away from the
+            set-point with an increasing rate. The prime example is an
+            inverted pendulum. Once the pendulum goes out of balance, gravity
+            has even more leverage to tilt it downwards and so the error rate
+            increases even more.
+          </p>
+
+          <p>
+            Runaway processes are the hardest to control and sometimes only
+            offer a limited error band in which they can be controlled
+            successfully. Thinking about the inverted pendulum again, which
+            is relatively easy to balance by hand if it is close to the
+            set-point but gets increasingly difficult, if not impossible, the
+            further it goes away.
+          </p>
+
+          <p>
+            Because of this tendency to destabilise themselves a derivative
+            controll component is necessary to hinder the system from
+            drifting from the set-point on its own.
+          </p>
+        </div>
+      </div>
+
+      <div id="outline-container-org425169c" class="outline-3">
+        <h3 id="org425169c"><span class="section-number-3">1.4.</span> Sources</h3>
+        <div class="outline-text-3" id="text-1-4">
+          <ul class="org-ul">
+            <li><a href="https://control.com/textbook/process-dynamics-and-pid-controller-tuning/">control.com</a></li>
+            <li><a href="https://alphaville.github.io/qub/pid-101/#/">alphaville.github.io</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Integral_windup">wikipedia.org</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h2>Self-regulating Systems</h2>
+    <p>
+      Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
+      dolore
+      magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+      gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+      sadipscing
+      elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+      eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+      ipsum
+      dolor sit amet.
+    </p>
+
+    <iframe src="bin/simulations/pid-controller/water_boiler.html" scrolling="no"
+      title="Water boiler simulation"></iframe>
+
+    <h2>Integrating Systems</h2>
+    <p>
+      Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
+      dolore
+      magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+      gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+      sadipscing
+      elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+      eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+      ipsum
+      dolor sit amet.
+    </p>
+
+    <iframe src="bin/simulations/pid-controller/drone_hover.html" scrolling="no"
+      title="Drone hover simulation"></iframe>
+  </div>
+</body>
+
 </html>
