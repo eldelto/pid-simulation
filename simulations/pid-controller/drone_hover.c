@@ -87,7 +87,7 @@ int main(void) {
 
     const double set_point = second_set_point ? set_point_2 : set_point_1;
 
-    double new_thrust = pid_calculate_output(&pid, set_point, seesaw.physics_body->position.y);
+    double new_thrust = -pid_calculate_output(&pid, set_point, seesaw.physics_body->position.y);
     double thrust_change = new_thrust - thrust;
     thrust_change = sim_clamp_value(thrust_change, -1000, 1000);
     thrust += thrust_change;
